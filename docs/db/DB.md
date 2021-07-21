@@ -48,7 +48,7 @@ Transaction ACID
 - @Transactional 설정으로는 ReadOnly, timeout, propagation, isolation, rollback 과 같은 기능을 걸 수 있다. 
 - Propagation 설정을 통해서 Transaction 이 적용될 경계를 결정지을 수 있다. 
   - Propagation.REQUIRED 가 기본 설정이다. 활성화된 트랜잭션이 없다면 새로운 트랜잭션을 만들고 새로운 트랜잭션이 있다면 현재의 로직 흐름을 시킨다. 
-  - Propagation.SUPPROTED 는 현재 활성화된 트랜잭션이 있다면 그걸 쓰고. 없다면 트랜잭션을 안쓰도록 하는 것. 
+  - Propagation.SUPPORTED 는 현재 활성화된 트랜잭션이 있다면 그걸 쓰고. 없다면 트랜잭션을 안쓰도록 하는 것. 
   - Propagation.MANDATORY 는 현재 활성화된 트랜잭션이 있다면 그걸 쓰고 없다면 예외를 발생시키는 것 
   - Propagation.NEVER 는 현재 활성화된 트랜잭션이 있다면 예외를 발생시키고 없다면 넘어가는 것
   - Propagation.NOT_SUPPORTED 는 현재 활성화된 트랜잭션이 있다면 잠시 멈추고 비즈니스 로직을 트랜잭션 없이 쓰도록 하는 것 
