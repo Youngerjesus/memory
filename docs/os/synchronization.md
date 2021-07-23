@@ -41,5 +41,10 @@ Volatile 은 CPU Cache 에 값을 쓰는게 아니라 Main Memory 까지 내려�
 세마포어는 그리고 소유할 수 없고 뮤텍스는 소유하는게 가능하다. 
 
 
+#### Concurrency vs Parallelism
+
+- Concurrency: DB 트랜잭션의 동시성 문제 여러가지 일들을 처리하는 걸 말한다. 
+
+- Parallelism: MultiCore 에서 여러가지 일들을 동시에 실행하는 걸 말한다. 
 
    
