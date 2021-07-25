@@ -8,3 +8,5 @@ Java 11 에서는 기본 가비지 컬렉터가 G1GC 로 바꼈다.
 
 그리고 여러가지 String 메소드가 추가됐고 Optional 메소드들도 추가된 걸로 알고있다. 
 
+#### New String Features
+
