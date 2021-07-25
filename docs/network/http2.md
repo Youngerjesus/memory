@@ -24,19 +24,25 @@ HTTP 1.0 에서는 Persistent Connection 이라는 걸 지원해서 지정된 �
 
 #### HTTP 2 
 
-HTTP 1.X 버전에서 성능 향상을 위한 프로토콜이다.
+HTTP 1.X 버전에서 성능 향상을 위해서 나온 프로토콜이다.
 
 기존의 HTTP 1.X 버전과 완전히 호환된다.  
 
 HTTP 2 에서는 메시지 전송 방식이 변화되었다. 
 
-바이너리 프레이밍이라고 해서 기존에 문자열로 전송된 헤더와 데이터를 바이너리로 변환해서 Header Frame 과 Data Frame 으로
-나눠서 데이터를 보낸다. 이를 통해서 파싱이나 전송 속도가 올라간다. 
+Binary framing layer 라고 해서 기존에 문자열로 전송된 헤더와 데이터를 바이너리 프레임으로 변환해서 전송한다.
+보내는 데이터는 Header Frame 과 Data Frame 으로 나눠져서 보내질 수 있다. 바이너리로 인코딩되서 보내지므로 더 작은 데이터가 보내지는 장점이 있다.  
 
-또 스트림 형식으로 데이터를 보내는데 프레임으로 쪼개져서 보내고 인터리빙이라고 끼워들기도 지원했다. 그래서 여러가지 데이터를 병렬로 보낼때 
-TCP 커넥션을 여러개 맺어야 했는데 그럴 필요가 없어졌다. 
+또 Stream 을 이용해 클라이언트-서버는 양방향으로 데이터를 보낼 수 있고 한 TCP 연 Stream 에서 여러개의 메시지를 보내는 것도 가능해졌다. 프결
+즉 TCP 커넥션을 여러개 맺을 필요도 없어졌다. 
 
-이렇게 프레임으로 쪼개졌기 때문에 Head Of Line Blocking 문제를 해결했다.
+Stream 의 또 장점으로 HTTP 1.X 에서는 Multiple TCP Connection 을 맺어서 한번에 여러 요청을 보내고
+순서대로 응답을 받는게 가능했다. 하지만 이 방법의 문제는 첫번째 요청이 시간이 걸리면 그만큼 대기하게되는
+Head of line Blocking 이라는 문제가 생겼는데 Stream 에서는 데이터를 Frame 으로 전송하고 Interleaving 을 지원하며
+클라이언트와-서버는 받은 Frame 을 재조립하면 되므로 이런 Head of Line Blocking 문제를 해결했다.  
+즉 Multiplexing 을 이용해 문제를 해결했다. 
+
+또 다른 HTTP2 의 기능으로는 다음과 같다. 
 
 Stream Prioritization
 
