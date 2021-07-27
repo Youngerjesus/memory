@@ -74,3 +74,23 @@ Active 방식은 Expired 된 데이터에 접근할 때 그때 체크해서 지�
 - RDB/AOF 설정 OFF
 
 - 특정 command disable 
+
+#### Redis 사용시 주의할 점 
+
+- Persistent 옵션을 모두 끄는 것. 
+
+  - Redis 가 restart 할 때 가지고 있던 키 값들을 디스크에 저장해둔 Snapshot 이나 log 를 바탕으로 모두 올리는 방법이 있는데
+  이 두가지 방법 다 모두 문제가 조금 있어서 끄는 걸 추천한다.
+  
+- 싱글 스레드 명령이기 때문에 O(N) 명령어를 사용하지 않는다.
+
+- Redis 같은 인메모리 데이터 스트럭처 같은 경우는 메모리 관리가 중요해서 SWAP 을 하면 사용할 이유가 없으니까 
+사용할 키 값에 Expiration 을 거는 것. 
+
+- Sorted Set 같은 자료구조를 사용할 때 일정 크기보다 작다면 메모리르 조금 더 적게쓰는 Ziplist 를 사용하도록 바꾸는 것. 
+  
+  - 기본적으로 Sorted Set 은 Skip list 와 HashTable 을 같이 사용하는데 이는 메모리를 많이 사용한다. 
+  
+  - Set, Hash 같은 경우는 Hash Table 을 사용한다.      
+  
+  - Ziplist 도 선형 탐색을 한다. 
