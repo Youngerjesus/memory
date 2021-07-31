@@ -93,4 +93,10 @@ Active 방식은 Expired 된 데이터에 접근할 때 그때 체크해서 지�
   
   - Set, Hash 같은 경우는 Hash Table 을 사용한다.      
   
-  - Ziplist 도 선형 탐색을 한다. 
+  - Ziplist 도 선형 탐색을 한다.
+  
+#### Application Memory 에 저장하는 것 보다 Redis 에 저장하는 게 좋은 이유는?
+
+- Redis 에서는 expiration 을 걸 수 있다 라는 것.
+
+- Master-Slave 구조로 High-Available 하게 사용할 수 있다라는 것. 
