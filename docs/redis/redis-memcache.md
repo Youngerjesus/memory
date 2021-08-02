@@ -15,3 +15,6 @@ Redis 는 싱글 스레드를 기반으로 처리한다는 것.
 Redis 는 싱글 스레드 기반으로 사용하니까 O(n) 명령어 를 사용할 때 주의해야 한다라는 것 
 
 
+#### flush 가 다르다. 
+
+Memcached 는 lazy delete 를 하지만 Redis 는 즉시 모두 지운다.
