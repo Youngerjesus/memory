@@ -1,5 +1,7 @@
 # 개발자에게 필요한 핵심 역량 "판단력" 이란 
 
+https://www.youtube.com/watch?v=l5mqtYGm3gc
+
 ***
 
 ## Principle 1. 모호함을 걷어내고 정보에 기반한 결정을 할 것 

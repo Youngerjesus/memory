@@ -1,5 +1,7 @@
 # 개발자에게 필요한 핵심 역량 "협업" 이란
 
+https://www.youtube.com/watch?v=0BbLW6QNgro&t=6870s
+
 ***
 
 ## Principle 1. 빠르게 반응하기 보다는 잘 들어주기

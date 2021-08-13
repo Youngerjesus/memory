@@ -1,5 +1,7 @@
 # 개발자에게 필요한 핵심 역량 "결과" 를 만들어 내는 능력
 
+https://www.youtube.com/watch?v=_v1EGh5v4sM
+
 ***
 
 ## Principle 1. 집요함과 에너지로 다른 사람에게 영감을 줄 것

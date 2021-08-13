@@ -1,5 +1,7 @@
 # 개발자에게 필요한 "기술력" 이란? 
 
+https://www.youtube.com/watch?v=L9RqNAc2GFk&t=3774s
+
 ***
 
 ## Principle 1. 꾸준히 수준 높은 해결책을 만들어 내는 능력 
