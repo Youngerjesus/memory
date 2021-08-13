@@ -41,6 +41,11 @@ https://www.baeldung.com/rest-api-error-handling-best-practices?fbclid=IwAR3xzfh
 
 - 503 Service Unavailable: 요청된 서비스가 사용가능하지 않을 때 주는 에렄 코드를 말한다.
 
+- 304 Not Modified: 마지막 요청 이후 수정되지 않았다. 라는 뜻으로 바로 캐시에 저장된 리소스를 반환한다. 
+요청이 GET 이나 HEAD 로 시작되어야 하며 요청 헤더에 If-None-Match 나 If-Modified-Since 가 있는 경우에 이 기간이 지났는지 확인하고
+지나지 않았다면 캐시 리소를 준다. 
+
+
 ### More Detailed Response
 
 Spring 에서는 에러가 생기면 자동으로 형식을 갖춰서 다음과 같은 응답 메시지를 만들어준다.
