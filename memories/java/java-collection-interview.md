@@ -30,8 +30,7 @@
 
 ArrayList 는 Not Synchronization 이지만 Vector 는 Synchronization 으로 Thread-safe 이다.
 
-ArrayList 와 Vector 모두 둘 다 동적 배열인데 ArrayList 같은 경우는 가득차면 Array 의 절반만큼 
-사이즈가 늘어나지만 Vector 같은 경우는 두배로 늘어난다 
+ArrayList 와 Vector 모두 둘 다 동적 배열인데 ArrayList 같은 경우는 가득차면 Array 의 절반만큼 사이즈가 늘어나지만 Vector 같은 경우는 두배로 늘어난다 
 
 #### 5) What is the difference between ArrayList and LinkedList?
 
@@ -62,8 +61,7 @@ ConcurrentHashMap 은 이런 예외가 일어나지 않는다.
 
 둘 다 스레드 세이프 하다는 특징이 있지만 한번에 업데이트 할 수 있는 개수가 다르다. 
 
-ConcurrentHashMap 은 기본적으로 락의 개수가 16개로 한번에 16개의 값을 변경하는게 가능하다. 이것보다
-범위로 변경을 한다면 ConcurrentModificationException 이 발생한다. 
+ConcurrentHashMap 은 기본적으로 락의 개수가 16개로 한번에 16개의 값을 변경하는게 가능하다. 이것보다범위로 변경을 한다면 ConcurrentModificationException 이 발생한다. 
 
 HashTable 과 SynchronizedMap 은 둘 다 값을 업데이트 하기위해선 전체 Map 에 대해서 락을 걸지만
 

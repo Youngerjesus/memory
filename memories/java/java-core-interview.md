@@ -2,11 +2,9 @@
 
 #### Wrapper 클래스 와 Primitive Type
 
-기본적으로 Stack 에 저장된다. Primitive 는 Stack 에다가 값이 들어가지만 Wrapper 클래스는 Stack 에다가 들어가는 값은 참조할 주소가
-들어간다. 
+기본적으로 Stack 에 저장된다. Primitive 는 Stack 에다가 값이 들어가지만 Wrapper 클래스는 Stack 에다가 들어가는 값은 참조할 주소가 들어간다. 
 
 #### 접근 제어자에 대해서 설명해봐라 
-
 
 #### Equals 와 HashCode 
 
@@ -209,7 +207,7 @@ JIT 컴파일러의 핵심은 어플리케이션에서 자주 실행되는 부�
   - 제네릭 인터페이스로 T 타입의 객체를 매개변수로 받고 boolean 을 리턴한다. 
   
   
-#### Varaiable Capture 란?
+#### Variable Capture 란?
 
 람다식은 람다식 외부에 있는 변수에 접근이 가능하다. 이렇게 접근할 수 있는 걸 Variable Capture 이라고 하고
 이 조건에는 변수는 항상 Final 이어야한다. 하지만 변수가 선언되고 업데이트가 되지 않는다면 유사 파이널로 컴파일러가 판단하므로 final 키워드가 없어도 된다.
