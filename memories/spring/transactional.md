@@ -18,7 +18,6 @@ public Object invoke(MethodInvocation invocation) throws Throwable {
     }
 }
 ```
-
 - 새로운 트랜잭션을 만들고 해당 작업을 실행하고 commit() 을 한다. 만약 중간에 런타임 예외가 난다면 롤백이 된다.
 
 - 트랜잭션 성질상 Atomic 하기 때문에 모든 작업을 완료하던지 실패하던지 한다. 
