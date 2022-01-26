@@ -32,3 +32,5 @@
 - [soft-skill](memories/soft-skill)
 - [Spring](memories/spring)
 - [spring-cloud](memories/spring-cloud)
+- [Spark](memories/spark)
+- [Software Architecture](memories/software-architecture)
