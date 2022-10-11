@@ -35,3 +35,8 @@
 - [Spark](memories/spark)
 - [Software Architecture](memories/software-architecture)
 - [Searching](memories/search)
+- [MongoDB](memories/mongodb)
+- [Reactor](memories/reactor)
+- [MySQL](memories/MySQL)
+- [Distributed System](memories/distributed-system)
+- [Code](memories/code)

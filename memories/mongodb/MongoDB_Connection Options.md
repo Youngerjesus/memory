@@ -1,0 +1,113 @@
+# MongoDB Connection Options
+
+https://www.mongodb.com/docs/drivers/java/sync/v4.5/fundamentals/connection/connection-options/
+
+***
+
+## 몽고 DB Connection Options
+
+- minPoolSize
+    - Connection pool 에 존재하는 최소 풀 사이즈
+    - Default: 0
+- maxPoolSize
+    - 최대 풀 사이즈
+    - Default: 100
+- waitQueueTimeoutMS
+    - 스레드가 커넥션을 얻는데 걸리는 시간
+    - Default: 120초
+- ServerSelectionTimeoutMS
+    - 드라이버가 서버를 선택하는데 기다리는 시간. 이 시간이 지나면 예외를 던진다.
+    - Default: 30초
+- localThresholdMS
+    - ReplicaSet 과 같은 여러 서버와 통신을 할 때 가장 빠른 응답 서버와 통신을 하는데 이때 응답시간 + localThreshold 합친 값으로 비교한다.
+    - Default: 15 MS
+- heartbeatFrequencyMS
+    - 하트비트 주기
+    - Default: 10초
+- replicaSet
+    - ConnectionString 에 모든 replicaSet 을 명시하면 모든 멤버를 드라이버가 찾을 수 있다.
+    - Default: null
+- Ssl
+    - MongoDB 와 통신을 할 때 TLS/SSL 로 통신할 수 있다.
+    - Default: false
+- tls
+    - MOngoDB 와 통신할 떄 TLS/SSL 로 통신할 수 있다.
+    - Default: false
+- tlsInsecure
+    - 드라이버가 invalid 한 hostname 을 가진 곳과 tls 커넥션을 가지는게 가능하다.
+    - tlsAllowInvalidHostname 과 설정이 동일하다.
+    - Default: false
+- tlsAllowInvalidHostname
+    - tlsInsecure 과 동일하다.
+- connectTimeoutMs
+    - 드라이버가 커넥션을 맺기까지 기다리는 최대 시간. 이 시간이 지나면 예외를 던진다.
+    - 값을 0 으로 지정하면 드라이버는 절대 타임아웃을 내지 않는다.
+    - Default: 10 초
+- socketTimeoutMS
+    - 드라이버가 요청을 보내고 기다리는데 걸리는 최대 시간을 말한다.
+    - 값을 0 으로 지정하면 드라이버는 절대 타임아웃을 내지 않는다
+    - Default: 0
+- maxIdleTimeMS
+    - 풀에 있는 커넥션이 닫히기 전에 유휴상태로 있을 수 있는 최대 시간을 말한다.
+    - 값을 0 으로 지정하면 계속 유휴 상태로 있을 수 있다.
+    - Default: 0
+- maxLifeTimeMs
+    - 드라이버가 커넥션을 계속해서 쓸 수 있는 최대 시간을 말한다.
+    - 값이 0 이면 계속해서 쓸 수 있다.
+    - Default: 0
+- Journal
+    - 드라이버가 저널을 기다릴건지 여부
+    - Default: 0
+- W
+    - writeConcern 여부
+- wTimeoutMS
+    - writeConcern 을 지정했을 때  얼만큼 기다릴 지 여부
+    - 값을 0 으로 지정하면 타임아웃이 절대 나지 않는다.
+    - Default: 0
+- readPreference
+    - Read Preference 값
+    - Default: Primary
+- readPreferenceTags
+    - Read Preference Tag 값
+    - Replica member 들이 tag 가 등록되어 있는 경우에 사용할 수 있다.
+    - Default: null
+- maxStalenessSeconds
+    - Max replication lag 를 설정하는 것으로 stale (신선하지않은) 데이터를 읽는 걸 방지하기 위함으로 사용한다.
+    - Minimum value 는 90 이고 이것보다 작으면 에러가난다.
+    - 몽고 DB 3.4 이후에만 써야한다.
+    - -1 으로 설정하면 신선하지 않은 데이터라도 그냥 읽는다.
+    - Default: -1
+- authMechanism
+    - 드라이버가 credential 을 인증할 때 사용하는 인증 매커니즘 설정
+    - 가능하다면 가장 안전한 인증 매커니즘을 사용해야한다.
+- authSource
+    - Credential 을 인증할 데이터베이스
+    - Default: admin
+- appName
+    - Application 이름
+    - Default: null
+- Compressors
+    - 드라이버가 요청을 압축할 알고리즘
+    - 가능한 값은 zlib, snappy, zstd
+    - Default: null
+    - (언제쓰지?)
+- zlibCompressionLevel
+    - Zlib 를 쓰는 경우 압축 정도를 정하는 값
+    - 레벨은 -1 에서 9 까지.
+    - 값이 작을수록 압축이 빠르다. 대신 요청이 커진다.
+    - Default: null
+- retryWrites
+    - Write operation 에서 Network error 가 생겼을 때 자동으로 retry 를 지원할 건지 여부
+    - Default: true
+- retryReads
+    - Read operation 에서 Network error 가 생겼을 때 자동으로 retry 를 지원할 건지 여부
+- uuidRepresentation
+    - Uuid representation 을 write 와 read operation 에서 사용할건지 여부
+    - 몽고 DB 에 UUID 를 저장한다면 써야한다.
+    - Default: unspecified
+- DirectConnection
+    - 드라이버가 호스트와 직접 통신할건지의 여부
+    - Default: false
+- maxConnecting
+    - 동시에 맺을 수 있는 최대 커넥션 수
+    - Default: 2
