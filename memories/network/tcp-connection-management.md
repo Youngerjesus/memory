@@ -67,5 +67,6 @@
 
 - TCP KeepAlive 는 TCP connection 이 계속 유지되어있는지 확인하는 것.
 - HTTP KeepAlive 는 하나의 request 를 같은 TCP Connection 에서 보낼 수 있는지 확인하는 것.
-- HTTP KeepAlive 는 최대한 시간만큼 연결을 유지한다.
+- HTTP KeepAlive 는 최대한 시간만큼 연결을 유지한다. 요청을 보내면 시간은 다시 리셋. 
+  - 이거랑 idle timeout 이랑 연관이 있다. 이 시간동안 요청을 안보내면 
 - 이 값을 60초로 지정해두면 TCP 는 60초마다 연결을 확인하고, HTTP 는 60초 지나면 연결을 끊는다. 
