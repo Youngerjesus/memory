@@ -7,7 +7,9 @@ https://projectreactor.io/docs/netty/snapshot/reference/index.html
 ## 6.7. Connection Pool
 
 - HTTP Client 는 고정된 커넥션 풀을 가진다. 이건 최대 500개의 활성화 채널을 만들 수 있다. 그리고 최대 1000개의 채널까지 확장가능. pending 된 상태로
-  - 커넥션의 개수는 processor * 2, 최소 숫자는 16개. 
+  - 기본 커넥션의 개수는 processor * 2, 최소 숫자는 16개. 
+  - 하나의 커넥션은 하나의 channel 을 가진다. 
+  - 채널이 소켓 채널 말한다. 
 
 - 한 개의 커넥션이 Active 한 channel 을 조회할 수 있는, metric 을 수집할 수 있는 방법이 있을 거 같다. 
 
