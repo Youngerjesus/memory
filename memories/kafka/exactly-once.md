@@ -55,8 +55,9 @@ Kafka 와 Kafka Streams 에서 exactly-once 처리하는 방법은?
 ## 질문 
 
 <details>
-부정확한 결과를 내는 경우는 언제지?
 <summary> 
+부정확한 결과를 내는 경우는 언제지?
+</summary>
 - Failure and restart 할 때 non-deterministic operation 과 어플리케이션에 의한 외부 저장소의 상태 변경이 발생한 경우에 부정확한 결과를 내거나 중복된 결과가 발생할 수 있다고 한다.
 - Failure 가 났을 때 external system 을 쓰고 있고 이를 롤백하는 기능이 없다면 incorrect 한 결과를 낼 수 있다고 한다.
   - count 의 state 를 DB 에 기록했고 처리헀다는 offset 을 날리려고 하는데 장애가 나서 안된 경우
@@ -64,16 +65,16 @@ Kafka 와 Kafka Streams 에서 exactly-once 처리하는 방법은?
       - offset 성공 but DB 실패가 일어났다고 생각해보자.
         - offset 되돌려야한다. 누군가는 되돌려야하네.
         - DB 를 되돌리는게 맞지. offset 자체의 의미가 처리가 완료되었다는 뜻이니까.
-  - 외부 시스템을 쓰고있고 롤백하는 시스템이 없다면 부정확한 결과를 낼 수 있네.  
-</summary>
+  - 외부 시스템을 쓰고있고 롤백하는 시스템이 없다면 부정확한 결과를 낼 수 있네.
 </details> 
 
 <details> 
-Kafka 내부 시스템만 쓰고 있는 경우에는 exactly-once 를 보장할 수 있는가? 
 <summary>
+Kafka 내부 시스템만 쓰고 있는 경우에는 exactly-once 를 보장할 수 있는가?
+</summary>
 `processing.guarantee=exactly_once` 이 옵션을 설정하면 되니까 가능함.
 
-Kafka 에서 데이터를 처리하는 과정은 다음과 같은 루프를 도는 과정이다. 
+Kafka 에서 데이터를 처리하는 과정은 다음과 같은 루프를 도는 과정이다.
 
 1) Topic A 에서 데이터를 읽어옴.
 
@@ -81,35 +82,35 @@ Kafka 에서 데이터를 처리하는 과정은 다음과 같은 루프를 도�
 
 3) Output Message 를 Topic B 에 날림.
 
-4) Topic B 에서 완료했다는 ACK 를 받음. 
+4) Topic B 에서 완료했다는 ACK 를 받음.
 
-5) Topic A 에 데이터를 처리했다는 commit 을 날려줌. 
+5) Topic A 에 데이터를 처리했다는 commit 을 날려줌.
 
 
 여기서 4) 과 5) 에 문제가 생기면 중복 process 가 되거나 중복 Write 가 생긴다.
 
-- 4) 에 응답이 늦게오거나 시스템이 데이터는 썼는데 응답을 못날린 상황이라면 retry 를 할거고 그러면 중복 데이터가 생길 수 있다. 
+- 4) 에 응답이 늦게오거나 시스템이 데이터는 썼는데 응답을 못날린 상황이라면 retry 를 할거고 그러면 중복 데이터가 생길 수 있다.
 
-- 5) 에서 commit 을 날려주기 전에 어플리케이션이 죽었다면 중복 처리하는 문제가 생겨서 상태가 두 번 업데이트 되는 문제가 생길 수 있다. 
+- 5) 에서 commit 을 날려주기 전에 어플리케이션이 죽었다면 중복 처리하는 문제가 생겨서 상태가 두 번 업데이트 되는 문제가 생길 수 있다.
 
 
-exactly-once 를 보장하려면 상태 업데이트와, ack 를 받는 과정과 commit 을 하는 과정이 한번에 되면 된다. 
+exactly-once 를 보장하려면 상태 업데이트와, ack 를 받는 과정과 commit 을 하는 과정이 한번에 되면 된다.
 
-Kafka Streams 에서는 이를 다 Topic 에 메시지를 write 하는 과정으로 매핑해서 해결한다. 
+Kafka Streams 에서는 이를 다 Topic 에 메시지를 write 하는 과정으로 매핑해서 해결한다.
 
-- 상태 업데이트는 Kafka Change log Topic 에 상태 메시지를 보낸는 걸로. 
-- commit 을 날리는 것은 Kafka Offset Topic 에 offset 메시지를 날리는 걸로. 
+- 상태 업데이트는 Kafka Change log Topic 에 상태 메시지를 보낸는 걸로.
+- commit 을 날리는 것은 Kafka Offset Topic 에 offset 메시지를 날리는 걸로.
 
 이렇게 다 Topic 에 메시지를 날리는 과정으로 변환되었다면 Transaction API 를 써서 atomic 하게 처리하도록 한다.
-- 하나가 실패하면 다 실패. 성공하면 다 성공 
+- 하나가 실패하면 다 실패. 성공하면 다 성공
 
 어떻게 이게 exactly once 를 보장할까? (= 간단한 문제로 변환되는 이유는 뭘까?)
-- 실패했을 때 rollback 하는 과정이 있기 때문에. 
+- 실패했을 때 rollback 하는 과정이 있기 때문에.
 - 하나가 실패했다면 성공한 쪽의 topic 에서 해당 메시지를 버리면 되는거니까.
 
-실제로 해결이 되나? 
+실제로 해결이 되나?
 - 4) 에서 ack 응답이 없다면? Topic 에 하나만 쌓이도록 Stream App 의 producer 에 `enable.idempotence` 이 옵션이 true 로 설정되어 있으면 된다.
-- 에러가 생기면 해당 진행중인 트랜잭션을 버리면 된다. 그럼 해당 트랜잭션 ID 부터 다시 시작할 수 있는 것. 
+- 에러가 생기면 해당 진행중인 트랜잭션을 버리면 된다. 그럼 해당 트랜잭션 ID 부터 다시 시작할 수 있는 것.
   - change log topic, offset topic, topic B 다 해당 트랜잭션 ID 의 offset 부터 재계산 하면 한번만 처리되도록 복구할 수 있다.
 
 코드로 보면 이렇다.
@@ -143,9 +144,7 @@ try {
   producer.abortTxn();
 }
 ```
-- 그냥 예외가 나면 트랜잭션을 버림. 
-
-</summary>
+- 그냥 예외가 나면 트랜잭션을 버림.
 </details>
 
 <details> 
@@ -159,30 +158,29 @@ deterministic operation 이 뭔데?
 - deterministic 은 결과가 항상 예측가능하고 일관성이 있어야한다는 것.
 
 <details>
-모든 실패하는 케이스를 생각해보자. 
-<summary> 
-
+<summary>
+모든 실패하는 케이스를 생각해보자.
+</summary>
 ![](./kafka%20streams%20processing.png)
 
-- 크게 나누면 Network 와 App, 좀비 인스턴스가 있다. 
-- App 은 처리전과 처리후 다운이 잇다.   
+- 크게 나누면 Network 와 App, 좀비 인스턴스가 있다.
+- App 은 처리전과 처리후 다운이 잇다.
 - Network 는 응답이 느린 경우.
 - 좀비 인스턴스는 분산 환경에서 생길 수 있는 문제다.
-
-</summary>
 </details>
 
 <details>
-Kafka 에서 트랜잭션은 어떻게 동작하는 건가?
 <summary> 
+Kafka 에서 트랜잭션은 어떻게 동작하는 건가?
+</summary>
 
-Topic A 에서 메시지 a 를 읽어오고 처리한 후 Topic B 파티션 tb 에 메시지 b 를 보내는 작업을 한다고 생각했을 때 
+Topic A 에서 메시지 a 를 읽어오고 처리한 후 Topic B 파티션 tb 에 메시지 b 를 보내는 작업을 한다고 생각했을 때
 
-offset topic 에 topic A 의 메시지 a 에 대한 offset 을 기록하는 것과 파티션 tb 에 메시지 b 를 보내는 것이 atomic 하면 된다. 
+offset topic 에 topic A 의 메시지 a 에 대한 offset 을 기록하는 것과 파티션 tb 에 메시지 b 를 보내는 것이 atomic 하면 된다.
 
-트랜잭션이 가지는 의미 
-- atomic multi-partition write 
-- zombie instance fencing 
+트랜잭션이 가지는 의미
+- atomic multi-partition write
+- zombie instance fencing
 - reading transaction message
 
 트랜잭션 처리되는 과정
@@ -190,32 +188,30 @@ offset topic 에 topic A 의 메시지 a 에 대한 offset 을 기록하는 것�
 ![](./kafka%20transaction.png)
 
 1) transaction register a transaction.id with coordinator
-- 이 단계에서 pending 된 transaction 은 종료된다. transaction.id 당 하나의 transaction 만 적용하도록. 
+- 이 단계에서 pending 된 transaction 은 종료된다. transaction.id 당 하나의 transaction 만 적용하도록.
 - 이 기준을 잡기 위해서 epoch 를 쓴다.
 
 2) transaction 은 coordinator 에 의해서 transaction log 에 기록됨. (ongoing -> prepare -> committed)
-- coodinator 가 트랜잭션을 관리한다. (읽고 쓰기 가능.) 
+- coodinator 가 트랜잭션을 관리한다. (읽고 쓰기 가능.)
 
 3) producer 은 data 를 partition 으로 다 보냄.
 - 이건 데이터 보내는 과정이다. 다만 유효한 producer 인지 검사한다.
 
-4) producer 가 data 를 다 보낸후 commit 을 하면 two phase commit 을 통해서 완료됨. 
+4) producer 가 data 를 다 보낸후 commit 을 하면 two phase commit 을 통해서 완료됨.
 - two phase commit 을 하는 이유는 데이터를 안쓸가능성이 있기 때문에.
-- 파티션에 쓰여진 데이터는 커밋된거와 롤백된 거가 있다. 다음 consumer 가 가져가야 되는 데이터를 마킹하기 위해서 토픽 파티션에 마킹하는 작업인 transaction marker 가 추가됨.   
-
-
-</summary>
+- 파티션에 쓰여진 데이터는 커밋된거와 롤백된 거가 있다. 다음 consumer 가 가져가야 되는 데이터를 마킹하기 위해서 토픽 파티션에 마킹하는 작업인 transaction marker 가 추가됨.
 </details>
 
 <details>
-transactional.id 가 뭐지? producer 에게 붙는걸까? 
-<summary> 
-메시지를 트랜잭션으로 처리하기 위해 식별성을 위해서 필요한 것. 
-
-트랜잭션에 참여하는 프로듀서와 컨슈머를 나타낼 수 있고 트랜잭션에 참여하는 메시지를 구별할 수도 있다.  
-
-transactional.id 는 증가하는게 아니라 재사용하는거네. 
+<summary>
+transactional.id 가 뭐지? producer 에게 붙는걸까?  
 </summary>
+
+메시지를 트랜잭션으로 처리하기 위해 식별성을 위해서 필요한 것.
+
+트랜잭션에 참여하는 프로듀서와 컨슈머를 나타낼 수 있고 트랜잭션에 참여하는 메시지를 구별할 수도 있다.
+
+transactional.id 는 증가하는게 아니라 재사용하는거네.
 </details>
 
 ## 새로 안 사실 
