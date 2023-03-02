@@ -114,7 +114,7 @@
 
 다음의 토픽과 컨슈머 그룹의 경우 두 개의 컨슈머가 있고 하나의 토픽에 파티션 수가 3 개씩 있으므로 3 / 2 를 계산한다.
 
-![consumer1](./consumer1.png)
+![consumer1](images/consumer1.png)
 
 이때 딱 나눠 떨어지지 않으므로 앞쪽의 컨슈머가 더 많은 파티션을 할당받게 된다.
 
@@ -128,7 +128,7 @@
 
 즉 다음과 같을 것이다.
 
-![consumer2](./consumer2.png)
+![consumer2](images/consumer2.png)
 
 ### 스티키 파티션 할당 전략
 
@@ -176,7 +176,7 @@
 
 COOPERATIVE 프로토콜은 동작 중인 컨슈머들에게 영향을 주지 않는 상태에서 몇 차례에 걸쳐서 리밸런싱이 일어난다.
 
-![consumer3](./consumer3.png)
+![consumer3](images/consumer3.png)
 
 진행 순서는 다음과 같다.
 

@@ -241,3 +241,116 @@ kafka 에서 메시지가 consume 되었다는 걸 나타내느 증거로 offset
 
 - https://www.confluent.io/blog/enabling-exactly-once-kafka-streams/
 
+*** 
+
+# Kafka Streams 는 어떻게 exactly-once 로 처리할 수 있을까? 
+
+`processing.guarantee=exactly_once` 설정만 하면 Kafka Streams 는 정확히 한 번 처리하는게 가능해진다. 
+
+- default value 는 `at_least_once` 이다. 
+
+
+## What is Exactly-Once for Stream Processing?
+
+> for each received record, its processed results will be reflected once, even under failures. 
+
+## Exactly-Once: Why is it so Hard?
+
+![](./images/kafka%20streams%20main%20loop.png)
+
+1) Kafka Topic 으로 부터 message A 를 읽음. 
+
+2) processing function 이 트리거 되서 기존 상태 S 를 S` 으로 업데이트 시킨다.
+
+3) output message B1~Bn 까지 만들어서 output kafka topic 에다가 쓴다.
+
+4) Kafka Broker 로 부터 send 요청에 대한 응답을 기다린다. 
+
+5) 처리된 message A 에 commit 한다. 메시지 A 는 완전히 처리된 것. 
+
+### Failure Scenario #1: Duplicate Writes
+
+![](./images/duplicated%20write%201.png)
+
+- output Topic 으로의 쓰기 요청 이후 네트워크 상황이 잠시 안좋아서 ack 를 못받았다고 가정해보자.
+- retry 를 통해서 재전송할 것이고 이로인해서 topic 에 같은 결과물이 여러개가 생길 수 있다. 
+
+![](./images/duplicated%20write%202.png)
+
+### Failure Scenario #2: Duplicate Processing & Duplicate Writes 
+
+![](./images/duplicate%20processing%201.png)
+
+`4)` 까지의 작업이 완료되고 source Topic 에 commit 을 하려고 할 때 App 이 갑자기 죽는다면 어떻게 될까? commit 을 하지 못하고 죽었기 때문에 다시 해당 메시지를 처리한다. 
+
+그래서 processing 도 두 번 일어나서 상태도 두 번 업데이트 되고 output topic 에다가도 두 번 쓰게되는 문제가 생긴다. 
+
+## How Kafka Streams Guarantees Exactly-Once Processing
+
+결국에 exactly-once 를 보장하려면 다음 3가지 step 에서 트랜잭션이 보장되면 된다. 
+
+- Update the application state from S to S` 
+- Write result messages  B1, … Bn to output Kafka topic(s) TB.
+- Commit offset of the processed record A on the input Kafka topic TA
+
+이 세가지 일을 다 성공시키거나 하나라도 실패하면 다 롤백 시키면 된다. 
+
+어떻게 그게 가능할까? 위 세가지 작업은 다 토픽으로 데이터를 전송하는 과정으로 변환시켜 볼 수 있다. 
+
+- `Update the application state from S to S` -> `Kafka changelog topic`
+- `Write result messages  B1, … Bn to output Kafka topic(s) TB.` -> `Kafka sink topic`
+- `Commit offset of the processed record A on the input Kafka topic TA` -> `Kafka offset topic`
+
+Kafka changelog 에 기록하는 작업은 모든 state 들을 capture 해서 changelog 에 보관하는 작업이다. 새롭게 상태가 업데이트 될 때마다 그것들을 기록해놓는 것. 
+
+이 세가지 topic partition 에다가 offset 을 쓰는 것은 Kafka 의 `Transactional API` 를 쓰면 가능하다.
+
+Kafka Streams 에서 `processing.guarantee=exactly_once` 이 설정을 키면 내부적인 `embedded producer client` 가 transaction.id 를 이용해서 atomic 하게 모든 토픽 파티션에 쓰게 보장해준다.
+- 만약 일시적인 network 장애가 일어났다면 `idempotent producer` 로 인해서 duplicate message 는 버려지게 된다.
+- 만약 치명적인 error 가 발생했다면 exception 을 던지기 전에 카프카는 해당 트랜잭션을 abort 한다. 이로 인해서 같은 transaction.id 를 재시작할 수 있다.
+
+![](./images/transaction%20abort.png)
+
+````java
+/** when commit() is called */
+
+try {
+  // send the offsets to commit as part of the txn
+  producer.sendOffsets(“inputTopic”, offsets);
+
+  // commit the txn
+  producer.commitTxn();
+  
+} catch (KafkaException e) {
+  producer.abortTxn();
+}
+
+/** in the normal processing loop */
+
+try {
+  recs = consumer.poll();
+  
+  for (Record rec <- recs) {
+
+    // process ..
+
+    producer.send(“outputTopic”, ..);         
+    producer.send(“changelogTopic”, ..);   
+  }
+} catch (KafkaException e) {
+  producer.abortTxn();
+}
+````
+
+## How transactional work in Kafka  
+
+
+예외 경우 생각 
+- producer 가 데이터를 중간에 보내다가 죽는 경우 
+- producer 가 ack 응답을 못받은 경우. (중복 패킷 버리면 됨)
+- 브로커가 죽은 경우. 완료 처리가 안된거니까 다음 컨슈머에서 읽을 수도 없고 재시작하면 됨. 
+
+two-phase-commit 을 하는 이유
+- 컨슈머가 데이터를 읽을려고, 버려진 트랜잭션을 구별하려고
+
+## idempotent producer
